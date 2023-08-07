@@ -1,4 +1,5 @@
 use recase::ReCase;
+use regex::Regex;
 
 pub enum Case {
     Alternating,
@@ -46,6 +47,18 @@ where
         Case::UpperSnake => recase.upper_snake_case(),
         Case::WindowsPath => recase.windows_path_case(),
     }
+}
+
+pub fn sanitize(str_to_sanitize: &str) -> String {
+    let pattern = r"[\(\)’@,!\.\[\]{}\?:;·']";
+    let regex = Regex::new(pattern).unwrap();
+    let replaced_text = regex.replace_all(str_to_sanitize, "");
+
+    replaced_text.to_string()
+}
+
+pub fn downcase(str_to_downcase: &str) -> String {
+    str_to_downcase.to_lowercase()
 }
 
 #[cfg(test)]
@@ -173,5 +186,21 @@ mod tests {
                 output
             );
         }
+    }
+
+    #[test]
+    fn sanitize_test() {
+        let test_string = "my'example'@str[i]ng";
+        let result = sanitize(test_string);
+
+        assert!(result == "myexamplestring");
+    }
+
+    #[test]
+    fn downcase_test() {
+        let test_string = "MY EXAMPLE STRING";
+        let result = downcase(test_string);
+
+        assert!(result == "my example string");
     }
 }
