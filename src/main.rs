@@ -1,4 +1,4 @@
-use grace::recaser::recase::{Case, recase};
+use grace::case::string::{recase, Case};
 
 fn main() {
     let test_string = "Example String";
