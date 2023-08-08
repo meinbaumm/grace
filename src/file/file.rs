@@ -1,5 +1,28 @@
+use std::fmt;
 use std::fs;
 use std::path::Path;
+use std::vec::Vec;
+
+#[derive(Debug)]
+pub enum FileErr {
+    NotADirectory,
+    NotAFile,
+    UnhandledError(Box<dyn std::error::Error>),
+    FileAlreadyExist,
+}
+
+impl std::error::Error for FileErr {}
+
+impl fmt::Display for FileErr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            FileErr::NotADirectory => write!(f, "Provided path is not a directory"),
+            FileErr::NotAFile => write!(f, "Provided path is not a file"),
+            FileErr::UnhandledError(e) => write!(f, "Unhandled error: {}", e),
+            FileErr::FileAlreadyExist => write!(f, "File already exist"),
+        }
+    }
+}
 
 pub struct File<'a> {
     path: &'a Path,
@@ -51,25 +74,46 @@ impl File<'_> {
         self.path.exists()
     }
 
-    pub fn read_dir(&self) -> Option<fs::ReadDir> {
-        if self.is_dir() {
-            return Some(fs::read_dir(self.path).unwrap());
+    pub fn read_dir(&self) -> Result<Vec<String>, FileErr> {
+        if !self.is_dir() {
+            return Err(FileErr::NotADirectory);
         }
-        None
+
+        let mut files_in_dir = Vec::new();
+        let paths = fs::read_dir(self.path).unwrap();
+
+        for path in paths {
+            match path {
+                Ok(path) => {
+                    let file_name = path.file_name().into_string().unwrap();
+                    files_in_dir.push(file_name);
+                }
+                Err(e) => println!("Error: {}", e),
+            }
+        }
+        return Ok(files_in_dir);
     }
 
-    pub fn create_file(&self) -> bool {
-        if !self.exist() {
-            return fs::File::create(self.path).is_ok();
+    pub fn create_file(&self) -> Result<(), FileErr> {
+        if self.exist() {
+            return Err(FileErr::FileAlreadyExist);
         }
-        false
+        
+        match fs::File::create(self.path) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
+        }
     }
 
-    pub fn rename_file(&self, new_name: &str) -> bool {
-        if self.is_file() {
-            let new_path = self.path.with_file_name(new_name);
-            return fs::rename(self.path, new_path).is_ok();
+    pub fn rename_file(&self, new_name: &str) -> Result<(), FileErr> {
+        if !self.is_file() {
+            return Err(FileErr::NotAFile);
         }
-        false
+
+        let new_path = self.path.with_file_name(new_name);
+        match fs::rename(self.path, new_path) {
+            Ok(_) => Ok(()),
+            Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
+        }
     }
 }
