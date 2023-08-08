@@ -98,7 +98,7 @@ impl File<'_> {
         if self.exist() {
             return Err(FileErr::FileAlreadyExist);
         }
-        
+
         match fs::File::create(self.path) {
             Ok(_) => Ok(()),
             Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
