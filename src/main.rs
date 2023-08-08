@@ -37,6 +37,14 @@ enum Recase {
         #[arg(short, long)]
         sanitize: bool,
     },
+    Files {
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        directory: Option<String>,
+        #[arg(short, long)]
+        into: IntoPossibleValues,
+        #[arg(short, long)]
+        sanitize: bool,
+    },
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
@@ -113,6 +121,34 @@ fn recase_file(
     Ok(())
 }
 
+fn recase_files(
+    directory: Option<String>,
+    into: &IntoPossibleValues,
+    is_sanitize: &bool,
+) -> Result<(), FileErr> {
+    let provided_directory = directory.as_deref().unwrap();
+    let file_path = file::File::new(provided_directory);
+
+    let files_to_recase = {
+        match file_path.read_dir() {
+            Ok(files) => files,
+            Err(_err) => {
+                unimplemented!()
+            }
+        }
+    };
+
+    for file in files_to_recase {
+        let _ = recase_file(
+            Some(format!("{}{}", provided_directory, file)),
+            &into,
+            is_sanitize,
+        );
+    }
+
+    Ok(())
+}
+
 fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
     if *is_sanitize {
         sanitize(file_name.as_str())
@@ -145,6 +181,13 @@ fn main() {
                 sanitize: is_sanitize,
             } => {
                 let _ = recase_file(file.clone(), &into_arg, is_sanitize);
+            }
+            Recase::Files {
+                directory,
+                into: into_arg,
+                sanitize: is_sanitize,
+            } => {
+                let _ = recase_files(directory.clone(), &into_arg, is_sanitize);
             }
         },
     }
