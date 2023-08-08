@@ -17,3 +17,6 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+# For testing functionality with on files
+test-dir

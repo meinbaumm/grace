@@ -9,6 +9,7 @@ pub enum FileErr {
     NotAFile,
     UnhandledError(Box<dyn std::error::Error>),
     FileAlreadyExist,
+    FileDoesNotExist,
 }
 
 impl std::error::Error for FileErr {}
@@ -20,6 +21,7 @@ impl fmt::Display for FileErr {
             FileErr::NotAFile => write!(f, "Provided path is not a file"),
             FileErr::UnhandledError(e) => write!(f, "Unhandled error: {}", e),
             FileErr::FileAlreadyExist => write!(f, "File already exist"),
+            FileErr::FileDoesNotExist => write!(f, "File does not exist"),
         }
     }
 }
@@ -98,7 +100,7 @@ impl File<'_> {
         if self.exist() {
             return Err(FileErr::FileAlreadyExist);
         }
-        
+
         match fs::File::create(self.path) {
             Ok(_) => Ok(()),
             Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
