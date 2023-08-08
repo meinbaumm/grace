@@ -1,4 +1,5 @@
 use grace::case::string::{recase, sanitize, Case};
+use grace::file::file::{self, FileErr};
 
 use clap::{Parser, Subcommand, ValueEnum};
 
@@ -26,6 +27,14 @@ enum Recase {
         #[arg(short, long, value_enum)]
         into: IntoPossibleValues,
         #[arg(long)]
+        sanitize: bool,
+    },
+    File {
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        file: Option<String>,
+        #[arg(short, long)]
+        into: IntoPossibleValues,
+        #[arg(short, long)]
         sanitize: bool,
     },
 }
@@ -70,17 +79,53 @@ fn unwrap_into_arg(value: &IntoPossibleValues) -> Case {
 fn recase_string(string: Option<String>, into: &IntoPossibleValues, is_sanitize: &bool) -> () {
     let string_to_recase = {
         let string = string.clone().unwrap();
-
-        if *is_sanitize {
-            sanitize(string.as_str())
-        } else {
-            string
-        }
+        maybe_sanitize(string, is_sanitize)
     };
 
     let into = unwrap_into_arg(&into);
 
     println!("{}", recase(string_to_recase, into));
+}
+
+fn recase_file(
+    file: Option<String>,
+    into: &IntoPossibleValues,
+    is_sanitize: &bool,
+) -> Result<(), FileErr> {
+    let binding = file.unwrap();
+    let file = file::File::new(binding.as_str());
+
+    if !file.exist() {
+        let err = Err(FileErr::FileDoesNotExist);
+        println!("{:?}", err);
+        return err;
+    }
+
+    let (file_name, file_extension) = extract_file_name_and_extension(&file);
+    let file_name_to_recase = maybe_sanitize(file_name, is_sanitize);
+
+    let recased_file_name = recase(file_name_to_recase, unwrap_into_arg(&into));
+    let to_rename = format!("{}.{}", recased_file_name, file_extension);
+
+    let _ = file.rename_file(&to_rename);
+
+    println!("Renamed to: {}", to_rename);
+    Ok(())
+}
+
+fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
+    if *is_sanitize {
+        sanitize(file_name.as_str())
+    } else {
+        file_name
+    }
+}
+
+fn extract_file_name_and_extension(file: &file::File) -> (String, String) {
+    let file_name = file.file_stem().unwrap();
+    let extension = file.extension().unwrap();
+
+    (file_name, extension)
 }
 
 fn main() {
@@ -93,6 +138,14 @@ fn main() {
                 into: into_arg,
                 sanitize: is_sanitize,
             } => recase_string(string.clone(), &into_arg, is_sanitize),
+
+            Recase::File {
+                file,
+                into: into_arg,
+                sanitize: is_sanitize,
+            } => {
+                let _ = recase_file(file.clone(), &into_arg, is_sanitize);
+            }
         },
     }
 }
