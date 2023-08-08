@@ -21,7 +21,7 @@ enum Commands {
 #[derive(Subcommand)]
 enum Recase {
     String {
-        #[arg(short, long)]
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: Option<String>,
         #[arg(short, long, value_enum)]
         into: IntoPossibleValues,
@@ -29,6 +29,7 @@ enum Recase {
         sanitize: bool,
     },
 }
+
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
 enum IntoPossibleValues {
     Altering,
