@@ -1,5 +1,6 @@
 use grace::case::string::{recase, sanitize, Case};
 use grace::file::file::{self, FileErr};
+use std::vec::Vec;
 
 use clap::{Parser, Subcommand, ValueEnum};
 
@@ -42,6 +43,8 @@ enum Recase {
         directory: Option<String>,
         #[arg(short, long)]
         into: IntoPossibleValues,
+        #[arg(short, long, value_delimiter = ',')]
+        formats: Vec<String>,
         #[arg(short, long)]
         sanitize: bool,
     },
@@ -125,13 +128,14 @@ fn recase_files(
     directory: Option<String>,
     into: &IntoPossibleValues,
     is_sanitize: &bool,
+    formats_to_recase: &Vec<String>,
 ) -> Result<(), FileErr> {
     let provided_directory = directory.as_deref().unwrap();
     let file_path = file::File::new(provided_directory);
 
     let files_to_recase = {
         match file_path.read_dir() {
-            Ok(files) => files,
+            Ok(files) => filter_files_by_formats(files, &formats_to_recase),
             Err(_err) => {
                 unimplemented!()
             }
@@ -147,6 +151,23 @@ fn recase_files(
     }
 
     Ok(())
+}
+
+fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
+    let mut filtered_files = Vec::new();
+
+    if files_formats.is_empty() {
+        return files;
+    }
+
+    for file in files {
+        let (_, file_extension) = extract_file_name_and_extension(&file::File::new(file.as_str()));
+
+        if files_formats.contains(&file_extension) {
+            filtered_files.push(file);
+        }
+    }
+    filtered_files
 }
 
 fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
@@ -186,8 +207,9 @@ fn main() {
                 directory,
                 into: into_arg,
                 sanitize: is_sanitize,
+                formats,
             } => {
-                let _ = recase_files(directory.clone(), &into_arg, is_sanitize);
+                let _ = recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
             }
         },
     }
