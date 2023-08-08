@@ -14,7 +14,7 @@ struct Cli {
 enum Commands {
     Recase { 
         #[command(subcommand)]
-        command: Recase,
+        what_to_recase: Recase,
     },
 }
 
@@ -58,13 +58,12 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Recase { command } => match command {
+        Commands::Recase { what_to_recase } => match what_to_recase {
             Recase::String { 
                 string ,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-
                 if *is_sanitize {
                     let string_to_sanitize = string.clone().unwrap();
                     let sanitized = sanitize(string_to_sanitize.as_str());
