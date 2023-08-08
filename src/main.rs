@@ -66,6 +66,22 @@ fn unwrap_into_arg(value: &IntoPossibleValues) -> Case {
     }
 }
 
+fn recase_string(string: Option<String>, into: &IntoPossibleValues, is_sanitize: &bool) -> () {
+    let string_to_recase = {
+        let string = string.clone().unwrap();
+
+        if *is_sanitize {
+            sanitize(string.as_str())
+        } else {
+            string
+        }
+    };
+
+    let into = unwrap_into_arg(&into);
+
+    println!("{}", recase(string_to_recase, into));
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -75,26 +91,7 @@ fn main() {
                 string,
                 into: into_arg,
                 sanitize: is_sanitize,
-            } => {
-                if *is_sanitize {
-                    let string_to_sanitize = string.clone().unwrap();
-                    let sanitized = sanitize(string_to_sanitize.as_str());
-                    let into = unwrap_into_arg(&into_arg);
-
-                    let result = recase(sanitized, into);
-
-                    println!("{}", result);
-                    return;
-                }
-
-                let string_to_recase = string.clone().unwrap();
-                println!("{:?}", into_arg);
-                let into = unwrap_into_arg(&into_arg);
-
-                let result = recase(string_to_recase, into);
-
-                println!("{}", result);
-            }
+            } => recase_string(string.clone(), &into_arg, is_sanitize),
         },
     }
 }
