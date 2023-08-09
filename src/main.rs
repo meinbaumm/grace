@@ -142,15 +142,25 @@ fn recase_files(
         }
     };
 
+    let directory_with_slash = maybe_add_slash_to_directory(&provided_directory);
+
     for file in files_to_recase {
         let _ = recase_file(
-            Some(format!("{}{}", provided_directory, file)),
+            Some(format!("{}{}", directory_with_slash, file)),
             &into,
             is_sanitize,
         );
     }
 
     Ok(())
+}
+
+fn maybe_add_slash_to_directory(directory: &str) -> String {
+    if directory.ends_with('/') {
+        directory.to_string()
+    } else {
+        format!("{}/", directory)
+    }
 }
 
 fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
