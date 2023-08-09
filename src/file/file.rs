@@ -81,19 +81,13 @@ impl File<'_> {
             return Err(FileErr::NotADirectory);
         }
 
-        let mut files_in_dir = Vec::new();
         let paths = fs::read_dir(self.path).unwrap();
 
-        for path in paths {
-            match path {
-                Ok(path) => {
-                    let file_name = path.file_name().into_string().unwrap();
-                    files_in_dir.push(file_name);
-                }
-                Err(e) => println!("Error: {}", e),
-            }
-        }
-        return Ok(files_in_dir);
+        let files_in_dir: Vec<String> = paths
+            .map(|path| path.unwrap().file_name().into_string().unwrap())
+            .collect();
+
+        Ok(files_in_dir)
     }
 
     pub fn create_file(&self) -> Result<(), FileErr> {
