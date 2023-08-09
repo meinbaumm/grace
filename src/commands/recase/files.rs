@@ -1,10 +1,10 @@
+use crate::arguments;
 use crate::commands::recase::file::{extract_file_name_and_extension, recase_file};
-use crate::core::file::file::{self, FileErr};
-use crate::arguments::into;
+use crate::core::file::{self, FileErr};
 
 pub fn recase_files(
     directory: Option<String>,
-    into: &into::IntoPossibleValues,
+    into: &arguments::Into,
     is_sanitize: &bool,
     formats_to_recase: &Vec<String>,
 ) -> Result<(), FileErr> {

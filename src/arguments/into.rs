@@ -1,8 +1,8 @@
-use crate::core::case::string::Case;
+use crate::core::case::Case;
 use clap::ValueEnum;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
-pub enum IntoPossibleValues {
+pub enum Into {
     Altering,
     Snake,
     Camel,
@@ -19,21 +19,21 @@ pub enum IntoPossibleValues {
     WindowsPath,
 }
 
-pub fn unwrap_into_arg(value: &IntoPossibleValues) -> Case {
+pub fn unwrap_into_arg(value: &Into) -> Case {
     match value {
-        IntoPossibleValues::Altering => Case::Alternating,
-        IntoPossibleValues::Snake => Case::Snake,
-        IntoPossibleValues::Camel => Case::Camel,
-        IntoPossibleValues::Kebab => Case::Kebab,
-        IntoPossibleValues::Dot => Case::Dot,
-        IntoPossibleValues::Header => Case::Header,
-        IntoPossibleValues::Normal => Case::Normal,
-        IntoPossibleValues::Original => Case::Original,
-        IntoPossibleValues::Pascal => Case::Pascal,
-        IntoPossibleValues::Path => Case::Path,
-        IntoPossibleValues::Sentence => Case::Sentence,
-        IntoPossibleValues::Title => Case::Title,
-        IntoPossibleValues::UpperSnake => Case::UpperSnake,
-        IntoPossibleValues::WindowsPath => Case::WindowsPath,
+        Into::Altering => Case::Alternating,
+        Into::Snake => Case::Snake,
+        Into::Camel => Case::Camel,
+        Into::Kebab => Case::Kebab,
+        Into::Dot => Case::Dot,
+        Into::Header => Case::Header,
+        Into::Normal => Case::Normal,
+        Into::Original => Case::Original,
+        Into::Pascal => Case::Pascal,
+        Into::Path => Case::Path,
+        Into::Sentence => Case::Sentence,
+        Into::Title => Case::Title,
+        Into::UpperSnake => Case::UpperSnake,
+        Into::WindowsPath => Case::WindowsPath,
     }
 }

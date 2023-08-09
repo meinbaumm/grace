@@ -2,8 +2,8 @@ use std::vec::Vec;
 
 use clap::{Parser, Subcommand};
 
-use grace::arguments::into;
-use grace::commands::recase::{string, file, files};
+use grace::arguments;
+use grace::commands::recase;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -27,7 +27,7 @@ enum Recase {
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: Option<String>,
         #[arg(short, long, value_enum)]
-        into: into::IntoPossibleValues,
+        into: arguments::Into,
         #[arg(long)]
         sanitize: bool,
     },
@@ -35,7 +35,7 @@ enum Recase {
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         file: Option<String>,
         #[arg(short, long)]
-        into: into::IntoPossibleValues,
+        into: arguments::Into,
         #[arg(short, long)]
         sanitize: bool,
     },
@@ -43,7 +43,7 @@ enum Recase {
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         directory: Option<String>,
         #[arg(short, long)]
-        into: into::IntoPossibleValues,
+        into: arguments::Into,
         #[arg(short, long, value_delimiter = ',')]
         formats: Vec<String>,
         #[arg(short, long)]
@@ -60,14 +60,14 @@ fn main() {
                 string,
                 into: into_arg,
                 sanitize: is_sanitize,
-            } => string::recase_string(string.clone(), &into_arg, is_sanitize),
+            } => recase::recase_string(string.clone(), &into_arg, is_sanitize),
 
             Recase::File {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = file::recase_file(file.clone(), &into_arg, is_sanitize);
+                let _ = recase::recase_file(file.clone(), &into_arg, is_sanitize);
             }
             Recase::Files {
                 directory,
@@ -75,7 +75,7 @@ fn main() {
                 sanitize: is_sanitize,
                 formats,
             } => {
-                let _ = files::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
+                let _ = recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
             }
         },
     }

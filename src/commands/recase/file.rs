@@ -1,6 +1,6 @@
-use crate::arguments::{into, sanitize};
-use crate::core::file::file::{self, FileErr};
-use crate::core::case::string::recase;
+use crate::arguments;
+use crate::core::case::recase;
+use crate::core::file::{self, FileErr};
 
 pub fn extract_file_name_and_extension(file: &file::File) -> (String, String) {
     let file_name = file.file_stem().unwrap_or_default();
@@ -11,7 +11,7 @@ pub fn extract_file_name_and_extension(file: &file::File) -> (String, String) {
 
 pub fn recase_file(
     file: Option<String>,
-    into: &into::IntoPossibleValues,
+    into: &arguments::Into,
     is_sanitize: &bool,
 ) -> Result<(), FileErr> {
     let binding = file.unwrap();
@@ -24,9 +24,9 @@ pub fn recase_file(
     }
 
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
-    let file_name_to_recase = sanitize::maybe_sanitize(file_name, is_sanitize);
+    let file_name_to_recase = arguments::maybe_sanitize(file_name, is_sanitize);
 
-    let recased_file_name = recase(file_name_to_recase, into::unwrap_into_arg(&into));
+    let recased_file_name = recase(file_name_to_recase, arguments::unwrap_into_arg(&into));
     let to_rename = format!("{}.{}", recased_file_name, file_extension);
 
     let _ = file.rename_file(&to_rename);
