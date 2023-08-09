@@ -154,20 +154,19 @@ fn recase_files(
 }
 
 fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
-    let mut filtered_files = Vec::new();
-
     if files_formats.is_empty() {
         return files;
     }
 
-    for file in files {
-        let (_, file_extension) = extract_file_name_and_extension(&file::File::new(file.as_str()));
+    files
+        .into_iter()
+        .filter(|file| {
+            let (_, file_extension) =
+                extract_file_name_and_extension(&file::File::new(file.as_str()));
 
-        if files_formats.contains(&file_extension) {
-            filtered_files.push(file);
-        }
-    }
-    filtered_files
+            files_formats.contains(&file_extension)
+        })
+        .collect()
 }
 
 fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
