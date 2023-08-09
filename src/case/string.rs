@@ -50,7 +50,7 @@ where
 }
 
 pub fn sanitize(str_to_sanitize: &str) -> String {
-    let pattern = r"[\(\)’@#&^—,!\.\[\]{}\?:;·']";
+    let pattern = r"[\(\)’@#+«»~&%^—,!\.\[\]{}\?:;·']";
     let regex = Regex::new(pattern).unwrap();
     let replaced_text = regex.replace_all(str_to_sanitize, "");
 

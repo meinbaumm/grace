@@ -178,8 +178,8 @@ fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
 }
 
 fn extract_file_name_and_extension(file: &file::File) -> (String, String) {
-    let file_name = file.file_stem().unwrap();
-    let extension = file.extension().unwrap();
+    let file_name = file.file_stem().unwrap_or_default();
+    let extension = file.extension().unwrap_or_default();
 
     (file_name, extension)
 }
