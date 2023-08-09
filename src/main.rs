@@ -142,9 +142,11 @@ fn recase_files(
         }
     };
 
+    let directory_with_slash = maybe_add_slash_to_directory(&provided_directory);
+
     for file in files_to_recase {
         let _ = recase_file(
-            Some(format!("{}{}", provided_directory, file)),
+            Some(format!("{}{}", directory_with_slash, file)),
             &into,
             is_sanitize,
         );
@@ -153,21 +155,28 @@ fn recase_files(
     Ok(())
 }
 
-fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
-    let mut filtered_files = Vec::new();
+fn maybe_add_slash_to_directory(directory: &str) -> String {
+    if directory.ends_with('/') {
+        directory.to_string()
+    } else {
+        format!("{}/", directory)
+    }
+}
 
+fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
     if files_formats.is_empty() {
         return files;
     }
 
-    for file in files {
-        let (_, file_extension) = extract_file_name_and_extension(&file::File::new(file.as_str()));
+    files
+        .into_iter()
+        .filter(|file| {
+            let (_, file_extension) =
+                extract_file_name_and_extension(&file::File::new(file.as_str()));
 
-        if files_formats.contains(&file_extension) {
-            filtered_files.push(file);
-        }
-    }
-    filtered_files
+            files_formats.contains(&file_extension)
+        })
+        .collect()
 }
 
 fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
@@ -179,8 +188,8 @@ fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
 }
 
 fn extract_file_name_and_extension(file: &file::File) -> (String, String) {
-    let file_name = file.file_stem().unwrap();
-    let extension = file.extension().unwrap();
+    let file_name = file.file_stem().unwrap_or_default();
+    let extension = file.extension().unwrap_or_default();
 
     (file_name, extension)
 }
