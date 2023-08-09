@@ -57,10 +57,6 @@ pub fn sanitize(str_to_sanitize: &str) -> String {
     replaced_text.to_string()
 }
 
-pub fn downcase(str_to_downcase: &str) -> String {
-    str_to_downcase.to_lowercase()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -194,13 +190,5 @@ mod tests {
         let result = sanitize(test_string);
 
         assert!(result == "myexamplestring");
-    }
-
-    #[test]
-    fn downcase_test() {
-        let test_string = "MY EXAMPLE STRING";
-        let result = downcase(test_string);
-
-        assert!(result == "my example string");
     }
 }

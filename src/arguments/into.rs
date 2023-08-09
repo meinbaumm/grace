@@ -1,4 +1,4 @@
-use crate::case::string::Case;
+use crate::core::case::string::Case;
 use clap::ValueEnum;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]

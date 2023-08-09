@@ -1,3 +1,3 @@
 pub mod arguments;
-pub mod case;
-pub mod file;
+pub mod commands;
+pub mod core;
