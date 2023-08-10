@@ -108,19 +108,13 @@ fn main() {
                 formats,
                 recursive,
             } => {
-                let formats = arguments::preprocess_formats(formats);
-
-                if *recursive {
-                    let _ = recase::recase_files_recursively(
-                        directory.clone(),
-                        &into_arg,
-                        is_sanitize,
-                        &formats,
-                    );
-                } else {
-                    let _ =
-                        recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
-                }
+                let _ = recase::recase_files(
+                    directory.clone(),
+                    &into_arg,
+                    is_sanitize,
+                    formats,
+                    recursive,
+                );
             }
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {

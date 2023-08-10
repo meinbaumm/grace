@@ -9,6 +9,24 @@ pub fn recase_files(
     into: &arguments::Into,
     is_sanitize: &bool,
     formats_to_recase: &Vec<String>,
+    is_recursive: &bool,
+) -> Result<(), FileErr> {
+    let formats = arguments::preprocess_formats(formats_to_recase);
+
+    if *is_recursive {
+        let _ = recase_recursively(directory.clone(), &into, is_sanitize, &formats);
+    } else {
+        let _ = recase(directory.clone(), &into, is_sanitize, &formats);
+    }
+
+    Ok(())
+}
+
+fn recase(
+    directory: Option<String>,
+    into: &arguments::Into,
+    is_sanitize: &bool,
+    formats_to_recase: &Vec<String>,
 ) -> Result<(), FileErr> {
     let provided_directory = directory.as_deref().unwrap();
     let file_path = file::File::new(provided_directory);
@@ -59,7 +77,7 @@ fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> V
         .collect()
 }
 
-pub fn recase_files_recursively(
+fn recase_recursively(
     directory: Option<String>,
     into: &arguments::Into,
     is_sanitize: &bool,
