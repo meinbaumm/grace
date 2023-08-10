@@ -1,6 +1,8 @@
 use grace::core::file::{File, FileErr};
+use serial_test::{parallel, serial};
 
 #[test]
+#[parallel]
 fn extension() {
     let file_name = "awesome_book.epub";
 
@@ -9,6 +11,7 @@ fn extension() {
 }
 
 #[test]
+#[parallel]
 fn file_name() {
     let file_name = "awesome_book.epub";
 
@@ -17,6 +20,7 @@ fn file_name() {
 }
 
 #[test]
+#[parallel]
 fn file_stem() {
     let file_name = "awesome_book.epub";
 
@@ -25,6 +29,7 @@ fn file_stem() {
 }
 
 #[test]
+#[parallel]
 fn is_dir() {
     struct TestCaseStruct {
         input: String,
@@ -49,6 +54,7 @@ fn is_dir() {
 }
 
 #[test]
+#[parallel]
 fn is_file() {
     struct TestCaseStruct {
         input: String,
@@ -73,6 +79,7 @@ fn is_file() {
 }
 
 #[test]
+#[parallel]
 fn exist() {
     struct TestCaseStruct {
         input: String,
@@ -101,6 +108,7 @@ fn exist() {
 }
 
 #[test]
+#[serial]
 fn read_dir() {
     let directory = "tests/core/file";
     let expected_files_in_directory = vec!["mod.rs".to_string(), "file.rs".to_string()];
@@ -114,6 +122,7 @@ fn read_dir() {
 }
 
 #[test]
+#[serial]
 fn create_file() {
     let file_name = "tests/core/file/created_file.txt";
 
@@ -131,6 +140,7 @@ fn create_file() {
 }
 
 #[test]
+#[serial]
 fn rename_file() {
     let file_name: &str = "tests/core/file/created_file.txt";
     let new_file_path = "tests/core/file/renamed_file.txt";
