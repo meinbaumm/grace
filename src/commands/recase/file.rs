@@ -26,7 +26,7 @@ pub fn recase_file(
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
     let file_name_to_recase = arguments::maybe_sanitize(file_name, is_sanitize);
 
-    let recased_file_name = recase(file_name_to_recase, arguments::unwrap_into_arg(&into));
+    let recased_file_name = recase(file_name_to_recase, arguments::map_case(&into));
     let to_rename = format!("{}.{}", recased_file_name, file_extension);
 
     let _ = file.rename_file(&to_rename);

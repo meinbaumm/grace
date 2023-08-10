@@ -1,121 +1,120 @@
 use grace::core::case;
 
 #[test]
-fn recase<'a>() {
-    struct TestCaseStruct<'a> {
-        test_name: &'a str,
+fn recase() {
+    struct TestCaseStruct {
         input: String,
-        output: String,
+        expected: String,
         case: case::Case,
     }
 
     let test_cases = vec![
         TestCaseStruct {
-            test_name: "Alternating",
             input: "Example String".to_string(),
-            output: "eXaMpLe StRiNg".to_string(),
+            expected: "eXaMpLe StRiNg".to_string(),
             case: case::Case::Alternating,
         },
         TestCaseStruct {
-            test_name: "Snake",
             input: "Example String".to_string(),
-            output: "example_string".to_string(),
+            expected: "example_string".to_string(),
             case: case::Case::Snake,
         },
         TestCaseStruct {
-            test_name: "Camel",
             input: "Example String".to_string(),
-            output: "exampleString".to_string(),
+            expected: "exampleString".to_string(),
             case: case::Case::Camel,
         },
         TestCaseStruct {
-            test_name: "Kebab",
             input: "Example String".to_string(),
-            output: "example-string".to_string(),
+            expected: "example-string".to_string(),
             case: case::Case::Kebab,
         },
         TestCaseStruct {
-            test_name: "Dot",
             input: "Example String".to_string(),
-            output: "example.string".to_string(),
+            expected: "example.string".to_string(),
             case: case::Case::Dot,
         },
         TestCaseStruct {
-            test_name: "Header",
             input: "Example String".to_string(),
-            output: "Example-String".to_string(),
+            expected: "Example-String".to_string(),
             case: case::Case::Header,
         },
         TestCaseStruct {
-            test_name: "Normal",
             input: "Example String".to_string(),
-            output: "example string".to_string(),
+            expected: "example string".to_string(),
             case: case::Case::Normal,
         },
         TestCaseStruct {
-            test_name: "Original",
             input: "Example String".to_string(),
-            output: "Example String".to_string(),
+            expected: "Example String".to_string(),
             case: case::Case::Original,
         },
         TestCaseStruct {
-            test_name: "Pascal",
             input: "Example String".to_string(),
-            output: "ExampleString".to_string(),
+            expected: "ExampleString".to_string(),
             case: case::Case::Pascal,
         },
         TestCaseStruct {
-            test_name: "Path",
             input: "Example String".to_string(),
-            output: "example/string".to_string(),
+            expected: "example/string".to_string(),
             case: case::Case::Path,
         },
         TestCaseStruct {
-            test_name: "Sentence",
             input: "example string".to_string(),
-            output: "Example string".to_string(),
+            expected: "Example string".to_string(),
             case: case::Case::Sentence,
         },
         TestCaseStruct {
-            test_name: "Title",
             input: "example string".to_string(),
-            output: "Example String".to_string(),
+            expected: "Example String".to_string(),
             case: case::Case::Title,
         },
         TestCaseStruct {
-            test_name: "UpperSnake",
             input: "Example String".to_string(),
-            output: "EXAMPLE_STRING".to_string(),
+            expected: "EXAMPLE_STRING".to_string(),
             case: case::Case::UpperSnake,
         },
         TestCaseStruct {
-            test_name: "WindowsPath",
             input: "Example String".to_string(),
-            output: "example\\string".to_string(),
+            expected: "example\\string".to_string(),
             case: case::Case::WindowsPath,
         },
     ];
 
-    for test_case in test_cases {
-        let test_name = test_case.test_name;
-        let output = test_case.output.clone();
-
+    test_cases.into_iter().for_each(|test_case| {
         let result = case::recase(test_case.input, test_case.case);
-
-        assert!(
-            result == test_case.output,
-            "\n\nTest case {} failed \nGot: {}\nExpected: {}",
-            test_name,
-            result,
-            output
-        );
-    }
+        assert_eq!(result, test_case.expected);
+    });
 }
 
 #[test]
 fn sanitize() {
-    let test_string = "my'example'@str[i]ng";
-    let result = case::sanitize(test_string);
+    struct TestCaseStruct<'a> {
+        inout: &'a str,
+        expected: String,
+    }
 
-    assert!(result == "myexamplestring");
+    let test_cases = vec![
+        TestCaseStruct {
+            inout: "my'example'@str[i]ng",
+            expected: "myexamplestring".to_string(),
+        },
+        TestCaseStruct {
+            inout: "Hello my friend",
+            expected: "Hello my friend".to_string(),
+        },
+        TestCaseStruct {
+            inout: "I love my life [2022]",
+            expected: "I love my life 2022".to_string(),
+        },
+        TestCaseStruct {
+            inout: "«Publisher» (best sellet) true crime series, read it! [2023]",
+            expected: "Publisher best sellet true crime series read it 2023".to_string(),
+        },
+    ];
+
+    test_cases.into_iter().for_each(|test_case| {
+        let result = case::sanitize(test_case.inout);
+        assert_eq!(result, test_case.expected);
+    });
 }

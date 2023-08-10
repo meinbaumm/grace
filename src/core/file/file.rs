@@ -3,11 +3,12 @@ use std::fs;
 use std::path::Path;
 use std::vec::Vec;
 
-#[derive(Debug)]
+/// Enum to represent the different errors that can occur when working with files.
+#[derive(Debug, PartialEq)]
 pub enum FileErr {
     NotADirectory,
     NotAFile,
-    UnhandledError(Box<dyn std::error::Error>),
+    UnhandledError,
     FileAlreadyExist,
     FileDoesNotExist,
 }
@@ -19,24 +20,28 @@ impl fmt::Display for FileErr {
         match self {
             FileErr::NotADirectory => write!(f, "Provided path is not a directory"),
             FileErr::NotAFile => write!(f, "Provided path is not a file"),
-            FileErr::UnhandledError(e) => write!(f, "Unhandled error: {}", e),
+            FileErr::UnhandledError => write!(f, "Unhandled error"),
             FileErr::FileAlreadyExist => write!(f, "File already exist"),
             FileErr::FileDoesNotExist => write!(f, "File does not exist"),
         }
     }
 }
 
+/// Struct to represent a file or directory.
+/// This struct is used to abstract away the underlying file system.
 pub struct File<'a> {
     path: &'a Path,
 }
 
 impl File<'_> {
+    /// Create a new file.
     pub fn new(path_str: &str) -> File {
         File {
             path: Path::new(path_str),
         }
     }
 
+    /// Return the file extension.
     pub fn extension(&self) -> Option<String> {
         self.path.extension().map(|os_str| {
             os_str
@@ -46,6 +51,7 @@ impl File<'_> {
         })
     }
 
+    /// Return the file name.
     pub fn file_name(&self) -> Option<String> {
         self.path.file_name().map(|os_str| {
             os_str
@@ -55,6 +61,7 @@ impl File<'_> {
         })
     }
 
+    /// Return the file stem.
     pub fn file_stem(&self) -> Option<String> {
         self.path.file_stem().map(|os_str| {
             os_str
@@ -64,18 +71,23 @@ impl File<'_> {
         })
     }
 
+    /// Check if the file is a directory.
     pub fn is_dir(&self) -> bool {
         self.path.is_dir()
     }
 
+    /// Check if the file is a file.
     pub fn is_file(&self) -> bool {
         self.path.is_file()
     }
 
+    /// Check if the file exist.
     pub fn exist(&self) -> bool {
         self.path.exists()
     }
 
+    /// If `File` is a directory, return a vector of the files in the directory.
+    /// If `File` is a file, return an error `FileErr::NotADirectory`.
     pub fn read_dir(&self) -> Result<Vec<String>, FileErr> {
         if !self.is_dir() {
             return Err(FileErr::NotADirectory);
@@ -90,6 +102,7 @@ impl File<'_> {
         Ok(files_in_dir)
     }
 
+    /// Create a file. If the file already exist, an error `FileErr::FileAlreadyExist` will be returned.
     pub fn create_file(&self) -> Result<(), FileErr> {
         if self.exist() {
             return Err(FileErr::FileAlreadyExist);
@@ -97,10 +110,11 @@ impl File<'_> {
 
         match fs::File::create(self.path) {
             Ok(_) => Ok(()),
-            Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
+            Err(_) => Err(FileErr::UnhandledError),
         }
     }
 
+    /// Rename file. If you try to rename a directory, an error `FileErr::NotAFile` will be returned.
     pub fn rename_file(&self, new_name: &str) -> Result<(), FileErr> {
         if !self.is_file() {
             return Err(FileErr::NotAFile);
@@ -109,7 +123,7 @@ impl File<'_> {
         let new_path = self.path.with_file_name(new_name);
         match fs::rename(self.path, new_path) {
             Ok(_) => Ok(()),
-            Err(err) => Err(FileErr::UnhandledError(Box::new(err))),
+            Err(_) => Err(FileErr::UnhandledError),
         }
     }
 }
