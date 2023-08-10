@@ -15,10 +15,12 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Recase string, file, or directory of files.
     Recase {
         #[command(subcommand)]
         what_to_recase: Recase,
     },
+    /// Sanitize string of unnecessary characters.
     Sanitize {
         #[command(subcommand)]
         what_to_sanitize: Sanitize,
@@ -27,29 +29,42 @@ enum Commands {
 
 #[derive(Subcommand)]
 enum Recase {
+    /// Recase string.
     String {
+        /// String to recase.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: Option<String>,
+        /// Case to recase string into.
         #[arg(short, long, value_enum)]
         into: arguments::Into,
+        /// Sanitize string before recasing.
         #[arg(long)]
         sanitize: bool,
     },
+    /// Recase file.
     File {
+        /// Path to recasing file.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         file: Option<String>,
+        /// Case to recase file into.
         #[arg(short, long)]
         into: arguments::Into,
+        /// Sanitize file name before recasing.
         #[arg(short, long)]
         sanitize: bool,
     },
+    /// Recase files in directory.
     Files {
+        /// Path to directory containing files.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         directory: Option<String>,
+        /// Case to recase files into.
         #[arg(short, long)]
         into: arguments::Into,
+        /// File extensions to recase. If multiple extensions, provide it like so: --formats="pdf, epub".
         #[arg(short, long, value_delimiter = ',')]
         formats: Vec<String>,
+        /// Sanitize file names before recasing.
         #[arg(short, long)]
         sanitize: bool,
     },
@@ -57,7 +72,9 @@ enum Recase {
 
 #[derive(Subcommand)]
 enum Sanitize {
+    /// Sanitize string.
     String {
+        /// String to sanitize.
         #[arg(value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: String,
     },
