@@ -15,3 +15,5 @@ clap = { version = "4.3.21", features = ["derive"] }
 recase = "0.3.0"
 regex = "1.9"
 serial_test = "2.0"
+colored = "2"
+walkdir = "2.3.3"

@@ -32,7 +32,7 @@ enum Recase {
     /// Recase string.
     String {
         /// String to recase.
-        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        #[arg(value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: Option<String>,
         /// Case to recase string into.
         #[arg(short, long, value_enum)]
@@ -67,6 +67,9 @@ enum Recase {
         /// Sanitize file names before recasing.
         #[arg(short, long)]
         sanitize: bool,
+        /// Rename files recursively.
+        #[arg(short, long)]
+        recursive: bool,
     },
 }
 
@@ -103,8 +106,15 @@ fn main() {
                 into: into_arg,
                 sanitize: is_sanitize,
                 formats,
+                recursive,
             } => {
-                let _ = recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
+                let _ = recase::recase_files(
+                    directory.clone(),
+                    &into_arg,
+                    is_sanitize,
+                    formats,
+                    recursive,
+                );
             }
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {
