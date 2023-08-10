@@ -126,4 +126,8 @@ impl File<'_> {
             Err(_) => Err(FileErr::UnhandledError),
         }
     }
+
+    pub fn path(&self) -> String {
+        self.path.to_str().unwrap().to_string()
+    }
 }

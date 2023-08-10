@@ -67,6 +67,9 @@ enum Recase {
         /// Sanitize file names before recasing.
         #[arg(short, long)]
         sanitize: bool,
+        /// Rename files recursively.
+        #[arg(short, long)]
+        recursive: bool,
     },
 }
 
@@ -103,8 +106,21 @@ fn main() {
                 into: into_arg,
                 sanitize: is_sanitize,
                 formats,
+                recursive,
             } => {
-                let _ = recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
+                let formats = arguments::preprocess_formats(formats);
+
+                if *recursive {
+                    let _ = recase::recase_files_recursively(
+                        directory.clone(),
+                        &into_arg,
+                        is_sanitize,
+                        &formats,
+                    );
+                } else {
+                    let _ =
+                        recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
+                }
             }
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {
