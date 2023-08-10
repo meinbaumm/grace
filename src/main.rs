@@ -3,7 +3,7 @@ use std::vec::Vec;
 use clap::{Parser, Subcommand};
 
 use grace::arguments;
-use grace::commands::recase;
+use grace::commands::{recase, sanitize};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -18,6 +18,10 @@ enum Commands {
     Recase {
         #[command(subcommand)]
         what_to_recase: Recase,
+    },
+    Sanitize {
+        #[command(subcommand)]
+        what_to_sanitize: Sanitize,
     },
 }
 
@@ -51,6 +55,14 @@ enum Recase {
     },
 }
 
+#[derive(Subcommand)]
+enum Sanitize {
+    String {
+        #[arg(value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        string: String,
+    },
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -77,6 +89,9 @@ fn main() {
             } => {
                 let _ = recase::recase_files(directory.clone(), &into_arg, is_sanitize, &formats);
             }
+        },
+        Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {
+            Sanitize::String { string } => sanitize::sanitize_string(string),
         },
     }
 }
