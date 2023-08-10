@@ -32,7 +32,7 @@ enum Recase {
     /// Recase string.
     String {
         /// String to recase.
-        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        #[arg(value_parser = clap::builder::NonEmptyStringValueParser::new())]
         string: Option<String>,
         /// Case to recase string into.
         #[arg(short, long, value_enum)]
