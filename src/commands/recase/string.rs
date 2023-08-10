@@ -7,7 +7,7 @@ pub fn recase_string(string: Option<String>, into: &arguments::Into, is_sanitize
         arguments::maybe_sanitize(string, is_sanitize)
     };
 
-    let into = arguments::unwrap_into_arg(&into);
+    let into = arguments::map_case(&into);
 
     println!("{}", recase(string_to_recase, into));
 }

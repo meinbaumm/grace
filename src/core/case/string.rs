@@ -1,6 +1,8 @@
 use recase::ReCase;
 use regex::Regex;
 
+/// Case variants into which the string can be recased.
+#[derive(PartialEq, Debug)]
 pub enum Case {
     Alternating,
     Snake,
@@ -25,6 +27,7 @@ where
     recase::ReCase::new(string_to_recase)
 }
 
+/// Recase a string into the specified case.
 pub fn recase<T>(string_to_recase: T, into: Case) -> String
 where
     T: Into<String>,
@@ -49,8 +52,11 @@ where
     }
 }
 
+/// Sanitize a string by removing all characters that are not alphanumeric.
+/// The only characters that are allowed are: `a-z`, `A-Z`, `0-9`, `_`, and `-`.
+/// Used regex is `r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;·']"`
 pub fn sanitize(str_to_sanitize: &str) -> String {
-    let pattern = r"[\(\)’@#+«»~&%^—,!\.\[\]{}\?:;·']";
+    let pattern = r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;·']";
     let regex = Regex::new(pattern).unwrap();
     let replaced_text = regex.replace_all(str_to_sanitize, "");
 

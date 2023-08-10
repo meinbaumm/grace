@@ -1,9 +1,10 @@
 use crate::core::case::sanitize;
 
-pub fn maybe_sanitize(file_name: String, is_sanitize: &bool) -> String {
+/// Sanitize a string if `is_sanitize` true.
+pub fn maybe_sanitize(string: String, is_sanitize: &bool) -> String {
     if *is_sanitize {
-        sanitize(file_name.as_str())
+        sanitize(string.as_str())
     } else {
-        file_name
+        string
     }
 }

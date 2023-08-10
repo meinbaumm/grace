@@ -1,6 +1,7 @@
 use crate::core::case::Case;
 use clap::ValueEnum;
 
+/// Enum to represent the different cases that can be converted to.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ValueEnum, Debug)]
 pub enum Into {
     Altering,
@@ -19,7 +20,8 @@ pub enum Into {
     WindowsPath,
 }
 
-pub fn unwrap_into_arg(value: &Into) -> Case {
+/// Map the `Into` enum to the `Case` enum.
+pub fn map_case(value: &Into) -> Case {
     match value {
         Into::Altering => Case::Alternating,
         Into::Snake => Case::Snake,
