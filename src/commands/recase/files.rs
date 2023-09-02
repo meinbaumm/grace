@@ -107,9 +107,12 @@ fn recase_recursively(
 
         let (_, file_extension) = extract_file_name_and_extension(&file);
 
-        if formats_to_recase.len() > 0 && formats_to_recase.contains(&file_extension) {
+        if formats_to_recase.len() > 0
+            && formats_to_recase.contains(&file_extension)
+            && file.is_file()
+        {
             let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
-        } else if formats_to_recase.len() == 0 {
+        } else if formats_to_recase.len() == 0 && file.is_file() {
             let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
         }
     }
