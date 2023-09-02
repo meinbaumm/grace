@@ -1,5 +1,3 @@
-use colored::*;
-
 use crate::arguments;
 use crate::core::case::recase;
 use crate::core::file::{self, FileErr};
@@ -39,7 +37,7 @@ pub fn recase_file(
 
     let _ = file.rename(&to_rename);
 
-    println!("Renamed to: {}", to_rename.green());
+    println!("Renamed to: {}", to_rename);
     Ok(())
 }
 
@@ -68,6 +66,6 @@ pub fn recase_directory(
 
     let _ = directory.rename(&recased_dir_name);
 
-    println!("Renamed to: {}", recased_dir_name.green());
+    println!("Renamed to: {}", recased_dir_name);
     Ok(())
 }
