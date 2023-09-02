@@ -1,5 +1,7 @@
 # Grace
 
+[![Crates info](https://img.shields.io/crates/v/grace-cli.svg)](https://crates.io/crates/grace-cli)
+
 <img src="misc/grace-logo.png" width="209" height="269" />
 
 **CLI tool for processing files and strings.**
