@@ -26,7 +26,9 @@ pub fn recase_file(
     }
 
     if !file.is_file() {
-        return Err(FileErr::NotAFile);
+        let err = Err(FileErr::NotAFile);
+        println!("{:?}", err);
+        return err;
     }
 
     let (file_name, file_extension) = extract_file_name_and_extension(&file);

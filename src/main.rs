@@ -53,6 +53,18 @@ enum Recase {
         #[arg(short, long)]
         sanitize: bool,
     },
+    /// Recase directory.
+    Dir {
+        /// Path to recasing dir.
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        file: Option<String>,
+        /// Case to recase file into.
+        #[arg(short, long)]
+        into: arguments::Into,
+        /// Sanitize file name before recasing.
+        #[arg(short, long)]
+        sanitize: bool,
+    },
     /// Recase files in directory.
     Files {
         /// Path to directory containing files.
@@ -96,13 +108,19 @@ fn main() {
                 into: into_arg,
                 sanitize: is_sanitize,
             } => recase::recase_string(string.clone(), &into_arg, is_sanitize),
-
             Recase::File {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
                 let _ = recase::recase_file(file.clone(), &into_arg, is_sanitize);
+            }
+            Recase::Dir {
+                file,
+                into: into_arg,
+                sanitize: is_sanitize,
+            } => {
+                let _ = recase::recase_directory(file.clone(), &into_arg, is_sanitize);
             }
             Recase::Files {
                 directory,
