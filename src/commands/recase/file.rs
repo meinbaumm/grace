@@ -25,6 +25,10 @@ pub fn recase_file(
         return err;
     }
 
+    if file.is_dir() {
+        return Ok(());
+    }
+
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
     let file_name_to_recase = arguments::maybe_sanitize(file_name, is_sanitize);
 
