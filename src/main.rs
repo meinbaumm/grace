@@ -70,6 +70,9 @@ enum Recase {
         /// Rename files recursively.
         #[arg(short, long)]
         recursive: bool,
+        /// Recase folders too if flag provided.
+        #[arg(long)]
+        folders: bool,
     },
 }
 
@@ -107,6 +110,7 @@ fn main() {
                 sanitize: is_sanitize,
                 formats,
                 recursive,
+                folders,
             } => {
                 let _ = recase::recase_files(
                     directory.clone(),
@@ -114,6 +118,7 @@ fn main() {
                     is_sanitize,
                     formats,
                     recursive,
+                    folders,
                 );
             }
         },

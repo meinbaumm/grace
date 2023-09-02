@@ -11,6 +11,7 @@ pub enum FileErr {
     UnhandledError,
     FileAlreadyExist,
     FileDoesNotExist,
+    DirectoryDoesNotExist,
 }
 
 impl std::error::Error for FileErr {}
@@ -23,6 +24,7 @@ impl fmt::Display for FileErr {
             FileErr::UnhandledError => write!(f, "Unhandled error"),
             FileErr::FileAlreadyExist => write!(f, "File already exist"),
             FileErr::FileDoesNotExist => write!(f, "File does not exist"),
+            FileErr::DirectoryDoesNotExist => write!(f, "Directory does not exist"),
         }
     }
 }
@@ -114,12 +116,8 @@ impl File<'_> {
         }
     }
 
-    /// Rename file. If you try to rename a directory, an error `FileErr::NotAFile` will be returned.
-    pub fn rename_file(&self, new_name: &str) -> Result<(), FileErr> {
-        if !self.is_file() {
-            return Err(FileErr::NotAFile);
-        }
-
+    /// Rename file or directory.
+    pub fn rename(&self, new_name: &str) -> Result<(), FileErr> {
         let new_path = self.path.with_file_name(new_name);
         match fs::rename(self.path, new_path) {
             Ok(_) => Ok(()),

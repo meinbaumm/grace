@@ -145,21 +145,22 @@ fn rename_file() {
     let file_name: &str = "tests/core/file/created_file.txt";
     let new_file_path = "tests/core/file/renamed_file.txt";
 
+    // test file does not exist at first
     let file: File<'_> = File::new(file_name);
     assert_eq!(file.exist(), false);
 
+    // create file and check if it exist
     file.create_file().unwrap();
     assert_eq!(file.exist(), true);
 
-    file.rename_file("renamed_file.txt").unwrap();
+    // rename file and check that file with old name does not exist
+    file.rename("renamed_file.txt").unwrap();
     assert_eq!(file.exist(), false);
 
+    // check that file with new name exist
     let file: File<'_> = File::new(new_file_path);
     assert_eq!(file.exist(), true);
 
+    // remove file
     std::fs::remove_file(new_file_path).unwrap();
-
-    let file_name: &str = "tests/core/file";
-    let file: File<'_> = File::new(file_name);
-    assert_eq!(file.rename_file("file.rs").unwrap_err(), FileErr::NotAFile);
 }

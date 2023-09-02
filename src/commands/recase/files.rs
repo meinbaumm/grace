@@ -4,19 +4,22 @@ use crate::arguments;
 use crate::commands::recase::file::{extract_file_name_and_extension, recase_file};
 use crate::core::file::{self, FileErr};
 
+use super::recase_directory;
+
 pub fn recase_files(
     directory: Option<String>,
     into: &arguments::Into,
     is_sanitize: &bool,
     formats_to_recase: &Vec<String>,
     is_recursive: &bool,
+    folders: &bool,
 ) -> Result<(), FileErr> {
     let formats = arguments::preprocess_formats(formats_to_recase);
 
     if *is_recursive {
         let _ = recase_recursively(directory.clone(), &into, is_sanitize, &formats);
     } else {
-        let _ = recase(directory.clone(), &into, is_sanitize, &formats);
+        let _ = recase(directory.clone(), &into, is_sanitize, &formats, folders);
     }
 
     Ok(())
@@ -27,13 +30,14 @@ fn recase(
     into: &arguments::Into,
     is_sanitize: &bool,
     formats_to_recase: &Vec<String>,
+    folders: &bool,
 ) -> Result<(), FileErr> {
     let provided_directory = directory.as_deref().unwrap();
     let file_path = file::File::new(provided_directory);
 
     let files_to_recase = {
         match file_path.read_dir() {
-            Ok(files) => filter_files_by_formats(files, &formats_to_recase),
+            Ok(files) => filter_files_by_formats(files, &formats_to_recase, folders),
             Err(_err) => {
                 unimplemented!()
             }
@@ -43,11 +47,18 @@ fn recase(
     let directory_with_slash = maybe_add_slash_to_directory(&provided_directory);
 
     for file in files_to_recase {
-        let _ = recase_file(
-            Some(format!("{}{}", directory_with_slash, file)),
-            &into,
-            is_sanitize,
-        );
+        let full_path = format!("{}{}", directory_with_slash, file);
+        let path = file::File::new(&full_path);
+
+        if path.is_dir() && *folders {
+            let _ = recase_directory(Some(full_path), &into, is_sanitize);
+        } else if path.is_file() {
+            let _ = recase_file(
+                Some(format!("{}{}", directory_with_slash, file)),
+                &into,
+                is_sanitize,
+            );
+        }
     }
 
     Ok(())
@@ -61,7 +72,11 @@ fn maybe_add_slash_to_directory(directory: &str) -> String {
     }
 }
 
-fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> Vec<String> {
+fn filter_files_by_formats(
+    files: Vec<String>,
+    files_formats: &Vec<String>,
+    include_folders: &bool,
+) -> Vec<String> {
     if files_formats.is_empty() {
         return files;
     }
@@ -72,7 +87,7 @@ fn filter_files_by_formats(files: Vec<String>, files_formats: &Vec<String>) -> V
             let (_, file_extension) =
                 extract_file_name_and_extension(&file::File::new(file.as_str()));
 
-            files_formats.contains(&file_extension)
+            files_formats.contains(&file_extension) || *include_folders
         })
         .collect()
 }

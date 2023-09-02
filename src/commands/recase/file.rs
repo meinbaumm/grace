@@ -25,8 +25,8 @@ pub fn recase_file(
         return err;
     }
 
-    if file.is_dir() {
-        return Ok(());
+    if !file.is_file() {
+        return Err(FileErr::NotAFile);
     }
 
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
@@ -35,8 +35,37 @@ pub fn recase_file(
     let recased_file_name = recase(file_name_to_recase, arguments::map_case(&into));
     let to_rename = format!("{}.{}", recased_file_name, file_extension);
 
-    let _ = file.rename_file(&to_rename);
+    let _ = file.rename(&to_rename);
 
     println!("Renamed to: {}", to_rename.green());
+    Ok(())
+}
+
+pub fn recase_directory(
+    directory: Option<String>,
+    into: &arguments::Into,
+    is_sanitize: &bool,
+) -> Result<(), FileErr> {
+    let binding = directory.unwrap();
+    let directory = file::File::new(binding.as_str());
+
+    if !directory.exist() {
+        let err = Err(FileErr::DirectoryDoesNotExist);
+        println!("{:?}", err);
+        return err;
+    }
+
+    if !directory.is_dir() {
+        return Err(FileErr::NotADirectory);
+    }
+
+    let dir_name = directory.file_stem().unwrap_or_default();
+    let dir_name_to_recase = arguments::maybe_sanitize(dir_name, is_sanitize);
+
+    let recased_dir_name = recase(dir_name_to_recase, arguments::map_case(&into));
+
+    let _ = directory.rename(&recased_dir_name);
+
+    println!("Renamed to: {}", recased_dir_name.green());
     Ok(())
 }
