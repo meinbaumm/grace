@@ -2,12 +2,13 @@ use std::vec::Vec;
 
 use clap::{Parser, Subcommand};
 
-use grace::arguments;
-use grace::commands::{recase, sanitize};
+use grace_cli::arguments;
+use grace_cli::commands::{recase, sanitize};
 
 #[derive(Parser)]
+#[command(name = "grace")]
+#[command(author = "Maxim Petrenko")]
 #[command(author, version, about, long_about = None)]
-#[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -27,7 +28,7 @@ enum Commands {
     },
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Recase {
     /// Recase string.
     String {
@@ -88,7 +89,7 @@ enum Recase {
     },
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Sanitize {
     /// Sanitize string.
     String {

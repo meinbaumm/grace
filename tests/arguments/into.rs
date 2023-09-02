@@ -1,5 +1,5 @@
-use grace::arguments;
-use grace::core::case::Case;
+use grace_cli::arguments;
+use grace_cli::core::case::Case;
 
 #[test]
 fn map_case() {

@@ -1,4 +1,4 @@
-use grace::arguments;
+use grace_cli::arguments;
 
 #[test]
 fn preprocess_formats() {

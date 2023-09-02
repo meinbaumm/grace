@@ -1,5 +1,5 @@
 [package]
-name = "grace"
+name = "grace-cli"
 version = "0.1.0"
 authors = ["Maxim Petrenko <meinbaumm@gmail.com>"]
 edition = "2021"
@@ -7,8 +7,8 @@ description = "CLI tool for processing files and strings."
 readme = "README.md"
 repository = "https://github.com/meinbaumm/grace.git"
 license = "MIT"
-keywords = ["cli", "files-manipulation", "strings-processing"]
-categories = ["command-line-utilities", "text-processing"]
+keywords = ["cli", "files-manipulation", "strings-processing", "files"]
+categories = ["command-line-utilities", "text-processing", "files"]
 
 [dependencies]
 clap = { version = "4.3.21", features = ["derive"] }
