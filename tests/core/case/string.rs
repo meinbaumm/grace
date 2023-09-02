@@ -1,4 +1,4 @@
-use grace::core::case;
+use grace_cli::core::case;
 
 #[test]
 fn recase() {

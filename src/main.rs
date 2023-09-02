@@ -2,12 +2,13 @@ use std::vec::Vec;
 
 use clap::{Parser, Subcommand};
 
-use grace::arguments;
-use grace::commands::{recase, sanitize};
+use grace_cli::arguments;
+use grace_cli::commands::{recase, sanitize};
 
 #[derive(Parser)]
+#[command(name = "grace")]
+#[command(author = "Maxim Petrenko")]
 #[command(author, version, about, long_about = None)]
-#[command(propagate_version = true)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -27,7 +28,7 @@ enum Commands {
     },
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Recase {
     /// Recase string.
     String {
@@ -38,12 +39,24 @@ enum Recase {
         #[arg(short, long, value_enum)]
         into: arguments::Into,
         /// Sanitize string before recasing.
-        #[arg(long)]
+        #[arg(short, long)]
         sanitize: bool,
     },
     /// Recase file.
     File {
         /// Path to recasing file.
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        file: Option<String>,
+        /// Case to recase file into.
+        #[arg(short, long)]
+        into: arguments::Into,
+        /// Sanitize file name before recasing.
+        #[arg(short, long)]
+        sanitize: bool,
+    },
+    /// Recase directory.
+    Dir {
+        /// Path to recasing dir.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         file: Option<String>,
         /// Case to recase file into.
@@ -70,10 +83,13 @@ enum Recase {
         /// Rename files recursively.
         #[arg(short, long)]
         recursive: bool,
+        /// Recase folders too if flag provided.
+        #[arg(long)]
+        folders: bool,
     },
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 enum Sanitize {
     /// Sanitize string.
     String {
@@ -93,7 +109,6 @@ fn main() {
                 into: into_arg,
                 sanitize: is_sanitize,
             } => recase::recase_string(string.clone(), &into_arg, is_sanitize),
-
             Recase::File {
                 file,
                 into: into_arg,
@@ -101,12 +116,20 @@ fn main() {
             } => {
                 let _ = recase::recase_file(file.clone(), &into_arg, is_sanitize);
             }
+            Recase::Dir {
+                file,
+                into: into_arg,
+                sanitize: is_sanitize,
+            } => {
+                let _ = recase::recase_directory(file.clone(), &into_arg, is_sanitize);
+            }
             Recase::Files {
                 directory,
                 into: into_arg,
                 sanitize: is_sanitize,
                 formats,
                 recursive,
+                folders,
             } => {
                 let _ = recase::recase_files(
                     directory.clone(),
@@ -114,6 +137,7 @@ fn main() {
                     is_sanitize,
                     formats,
                     recursive,
+                    folders,
                 );
             }
         },

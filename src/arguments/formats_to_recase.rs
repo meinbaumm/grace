@@ -1,3 +1,4 @@
+/// Parse formats to recase from command line arguments. Now it removes spaces from formats.
 pub fn preprocess_formats(formats: &Vec<String>) -> Vec<String> {
     formats
         .into_iter()
@@ -15,8 +16,8 @@ mod tests {
 
     #[test]
     fn remove_spaces_test() {
-        let string = "pdf, epub";
+        let string = "pdf, epub, txt,      jpeg";
 
-        assert_eq!(remove_spaces(string), "pdf,epub");
+        assert_eq!(remove_spaces(string), "pdf,epub,txt,jpeg");
     }
 }
