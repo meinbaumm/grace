@@ -39,7 +39,7 @@ enum Recase {
         #[arg(short, long, value_enum)]
         into: arguments::Into,
         /// Sanitize string before recasing.
-        #[arg(long)]
+        #[arg(short, long)]
         sanitize: bool,
     },
     /// Recase file.
