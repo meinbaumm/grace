@@ -112,7 +112,7 @@ Will recase all files in provided directory into camelCase. If you wand recase o
 grace-cli recase files -d test-dir/ -i camel -f "pdf, epub"
 ```
 
-If you wand recase directories to, you can write
+If you wand recase directories too, you can write
 
 ```bash
 grace-cli recase files -d test-dir/ -i camel -d
@@ -126,7 +126,7 @@ Grace also can rename files recursively, just provide `-r/--recursive` flag.
 grace-cli recase files -d test-dir/ -i camel -r
 ```
 
-Will recase all files un provided directories and files in subdirectories.
+Will recase all files in provided directories and files in subdirectories.
 
 > Unfortunately, recursively renaming directories is not supported now.
 
@@ -141,11 +141,11 @@ Will recase `test-dir/` into snake case.
 ### Recase strings
 
 ```bash
-grace-cli recase string "Some Long String You Can Recase Into Sentence" -i sentence
+grace-cli recase string "Some Long String You Want To Recase Into Sentence" -i sentence
 ```
 
 Will return
 
 ```
-Some long string you can recase into sentence
+Some long string you want to recase into sentence
 ```
