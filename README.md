@@ -2,7 +2,9 @@
 
 [![Crates info](https://img.shields.io/crates/v/grace-cli.svg)](https://crates.io/crates/grace-cli)
 
-<img src="misc/grace-logo.png" width="209" height="269" />
+<img src="misc/grace-logo.png" width="209" height="269" />  
+
+_Image author: [Мельк](https://www.linkedin.com/in/katemillart/)_
 
 **CLI tool for processing files and strings.**
 
