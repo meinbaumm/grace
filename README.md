@@ -77,7 +77,7 @@ source .zshrc
 grace-cli --help
 ```
 
-```
+```plain
 CLI tool for processing files and strings.
 
 Usage: grace-cli <COMMAND>
@@ -146,6 +146,11 @@ grace-cli recase string "Some Long String You Want To Recase Into Sentence" -i s
 
 Will return
 
-```
+```plain
 Some long string you want to recase into sentence
 ```
+
+## Additional projects
+
+1. [spider-web-search](https://crates.io/crates/spider-web-search) A tool for web search on your favorite sites.
+2. [AL](https://github.com/meinbaumm/al) CLI tool for open/close your apps and web URLs.
