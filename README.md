@@ -133,7 +133,7 @@ Will recase all files in provided directories and files in subdirectories.
 ### Recase directory
 
 ```bash
-grace-clie recase dir -f test-dir/ -i snake
+grace-cli recase dir -f test-dir/ -i snake
 ```
 
 Will recase `test-dir/` into snake case.
