@@ -2,7 +2,9 @@
 
 [![Crates info](https://img.shields.io/crates/v/grace-cli.svg)](https://crates.io/crates/grace-cli)
 
-<img src="misc/grace-logo.png" width="209" height="269" />
+<img src="misc/grace-logo.png" width="209" height="269" />  
+
+_Image author: [Мельк](https://www.linkedin.com/in/katemillart/)_
 
 **CLI tool for processing files and strings.**
 
@@ -75,7 +77,7 @@ source .zshrc
 grace-cli --help
 ```
 
-```
+```plain
 CLI tool for processing files and strings.
 
 Usage: grace-cli <COMMAND>
@@ -110,7 +112,7 @@ Will recase all files in provided directory into camelCase. If you wand recase o
 grace-cli recase files -d test-dir/ -i camel -f "pdf, epub"
 ```
 
-If you wand recase directories to, you can write
+If you wand recase directories too, you can write
 
 ```bash
 grace-cli recase files -d test-dir/ -i camel -d
@@ -124,14 +126,14 @@ Grace also can rename files recursively, just provide `-r/--recursive` flag.
 grace-cli recase files -d test-dir/ -i camel -r
 ```
 
-Will recase all files un provided directories and files in subdirectories.
+Will recase all files in provided directories and files in subdirectories.
 
 > Unfortunately, recursively renaming directories is not supported now.
 
 ### Recase directory
 
 ```bash
-grace-clie recase dir -f test-dir/ -i snake
+grace-cli recase dir -f test-dir/ -i snake
 ```
 
 Will recase `test-dir/` into snake case.
@@ -139,11 +141,16 @@ Will recase `test-dir/` into snake case.
 ### Recase strings
 
 ```bash
-grace-cli recase string "Some Long String You Can Recase Into Sentence" -i sentence
+grace-cli recase string "Some Long String You Want To Recase Into Sentence" -i sentence
 ```
 
 Will return
 
+```plain
+Some long string you want to recase into sentence
 ```
-Some long string you can recase into sentence
-```
+
+## Additional projects
+
+1. [spider-web-search](https://crates.io/crates/spider-web-search) A tool for web search on your favorite sites.
+2. [AL](https://github.com/meinbaumm/al) CLI tool for open/close your apps and web URLs.
