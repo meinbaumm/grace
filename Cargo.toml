@@ -1,6 +1,6 @@
 [package]
 name = "grace-cli"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Maxim Petrenko <meinbaumm@gmail.com>"]
 edition = "2021"
 description = "CLI tool for processing files and strings."
