@@ -3,7 +3,7 @@ use std::vec::Vec;
 use clap::{Parser, Subcommand};
 
 use grace_cli::arguments;
-use grace_cli::commands::{recase, sanitize};
+use grace_cli::commands::{recase, reformat, sanitize};
 
 #[derive(Parser)]
 #[command(name = "grace")]
@@ -26,6 +26,11 @@ enum Commands {
         #[command(subcommand)]
         what_to_sanitize: Sanitize,
     },
+    /// Reformat files from one extension into another.
+    Reformat {
+        #[command(subcommand)]
+        what_to_reformat: Reformat,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -38,31 +43,31 @@ enum Recase {
         /// Case to recase string into.
         #[arg(short, long, value_enum)]
         into: arguments::Into,
-        /// Sanitize string before recasing.
+        /// Sanitize string before recase.
         #[arg(short, long)]
         sanitize: bool,
     },
     /// Recase file.
     File {
-        /// Path to recasing file.
+        /// Path to recase file.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         file: Option<String>,
         /// Case to recase file into.
         #[arg(short, long)]
         into: arguments::Into,
-        /// Sanitize file name before recasing.
+        /// Sanitize file name before recase.
         #[arg(short, long)]
         sanitize: bool,
     },
     /// Recase directory.
     Dir {
-        /// Path to recasing dir.
+        /// Path to recase dir.
         #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
         file: Option<String>,
         /// Case to recase file into.
         #[arg(short, long)]
         into: arguments::Into,
-        /// Sanitize file name before recasing.
+        /// Sanitize file name before recase.
         #[arg(short, long)]
         sanitize: bool,
     },
@@ -77,7 +82,7 @@ enum Recase {
         /// File extensions to recase. If multiple extensions, provide it like so: --formats="pdf, epub".
         #[arg(short, long, value_delimiter = ',')]
         formats: Vec<String>,
-        /// Sanitize file names before recasing.
+        /// Sanitize file names before recase.
         #[arg(short, long)]
         sanitize: bool,
         /// Rename files recursively.
@@ -99,6 +104,25 @@ enum Sanitize {
     },
 }
 
+#[derive(Subcommand, Debug)]
+enum Reformat {
+    /// From one extension into another.
+    Files {
+        /// Path to directory containing files.
+        #[arg(short, long, value_parser = clap::builder::NonEmptyStringValueParser::new())]
+        directory: Option<String>,
+        /// Extension from which to reformat .
+        #[arg(short, long)]
+        from: String,
+        /// Extension to reformat files into.
+        #[arg(short, long)]
+        to: String,
+        /// Rename files recursively.
+        #[arg(short, long)]
+        recursive: bool,
+    },
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -108,20 +132,20 @@ fn main() {
                 string,
                 into: into_arg,
                 sanitize: is_sanitize,
-            } => recase::recase_string(string.clone(), &into_arg, is_sanitize),
+            } => recase::recase_string(string.clone(), into_arg, is_sanitize),
             Recase::File {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase::recase_file(file.clone(), &into_arg, is_sanitize);
+                let _ = recase::recase_file(file.clone(), into_arg, is_sanitize);
             }
             Recase::Dir {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase::recase_directory(file.clone(), &into_arg, is_sanitize);
+                let _ = recase::recase_directory(file.clone(), into_arg, is_sanitize);
             }
             Recase::Files {
                 directory,
@@ -133,7 +157,7 @@ fn main() {
             } => {
                 let _ = recase::recase_files(
                     directory.clone(),
-                    &into_arg,
+                    into_arg,
                     is_sanitize,
                     formats,
                     recursive,
@@ -143,6 +167,16 @@ fn main() {
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {
             Sanitize::String { string } => sanitize::sanitize_string(string),
+        },
+        Commands::Reformat { what_to_reformat } => match what_to_reformat {
+            Reformat::Files {
+                directory,
+                from,
+                to,
+                recursive,
+            } => {
+                unimplemented!("reformat command is unimplemented")
+            }
         },
     }
 }

@@ -128,8 +128,6 @@ grace-cli recase files -d test-dir/ -i camel -r
 
 Will recase all files in provided directories and files in subdirectories.
 
-> Unfortunately, recursively renaming directories is not supported now.
-
 ### Recase directory
 
 ```bash
