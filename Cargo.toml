@@ -14,5 +14,5 @@ categories = ["command-line-utilities", "text-processing", "files"]
 clap = { version = "4.3.21", features = ["derive"] }
 recase = "0.3.0"
 regex = "1.9"
-serial_test = "2.0"
+serial_test = "3.0"
 walkdir = "2.3.3"
