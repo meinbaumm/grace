@@ -32,7 +32,7 @@ pub fn recase_file(
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
     let file_name_to_recase = arguments::maybe_sanitize(file_name, is_sanitize);
 
-    let recased_file_name = recase(file_name_to_recase, arguments::map_case(&into));
+    let recased_file_name = recase(file_name_to_recase, arguments::map_case(into));
     let to_rename = format!("{}.{}", recased_file_name, file_extension);
 
     let _ = file.rename(&to_rename);
@@ -62,7 +62,7 @@ pub fn recase_directory(
     let dir_name = directory.file_stem().unwrap_or_default();
     let dir_name_to_recase = arguments::maybe_sanitize(dir_name, is_sanitize);
 
-    let recased_dir_name = recase(dir_name_to_recase, arguments::map_case(&into));
+    let recased_dir_name = recase(dir_name_to_recase, arguments::map_case(into));
 
     let _ = directory.rename(&recased_dir_name);
 

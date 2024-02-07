@@ -10,16 +10,16 @@ pub fn recase_files(
     directory: Option<String>,
     into: &arguments::Into,
     is_sanitize: &bool,
-    formats_to_recase: &Vec<String>,
+    formats_to_recase: &[String],
     is_recursive: &bool,
     folders: &bool,
 ) -> Result<(), FileErr> {
     let formats = arguments::preprocess_formats(formats_to_recase);
 
     if *is_recursive {
-        let _ = recase_recursively(directory.clone(), &into, is_sanitize, &formats);
+        let _ = recase_recursively(directory.clone(), into, is_sanitize, &formats);
     } else {
-        let _ = recase(directory.clone(), &into, is_sanitize, &formats, folders);
+        let _ = recase(directory.clone(), into, is_sanitize, &formats, folders);
     }
 
     Ok(())
@@ -37,25 +37,25 @@ fn recase(
 
     let files_to_recase = {
         match file_path.read_dir() {
-            Ok(files) => filter_files_by_formats(files, &formats_to_recase, folders),
+            Ok(files) => filter_files_by_extensions(files, formats_to_recase, folders),
             Err(_err) => {
                 unimplemented!()
             }
         }
     };
 
-    let directory_with_slash = maybe_add_slash_to_directory(&provided_directory);
+    let directory_with_slash = maybe_add_slash_to_directory(provided_directory);
 
     for file in files_to_recase {
         let full_path = format!("{}{}", directory_with_slash, file);
         let path = file::File::new(&full_path);
 
         if path.is_dir() && *folders {
-            let _ = recase_directory(Some(full_path), &into, is_sanitize);
+            let _ = recase_directory(Some(full_path), into, is_sanitize);
         } else if path.is_file() {
             let _ = recase_file(
                 Some(format!("{}{}", directory_with_slash, file)),
-                &into,
+                into,
                 is_sanitize,
             );
         }
@@ -64,7 +64,7 @@ fn recase(
     Ok(())
 }
 
-fn maybe_add_slash_to_directory(directory: &str) -> String {
+pub fn maybe_add_slash_to_directory(directory: &str) -> String {
     if directory.ends_with('/') {
         directory.to_string()
     } else {
@@ -72,12 +72,12 @@ fn maybe_add_slash_to_directory(directory: &str) -> String {
     }
 }
 
-fn filter_files_by_formats(
+pub fn filter_files_by_extensions(
     files: Vec<String>,
-    files_formats: &Vec<String>,
+    files_extensions: &Vec<String>,
     include_folders: &bool,
 ) -> Vec<String> {
-    if files_formats.is_empty() {
+    if files_extensions.is_empty() {
         return files;
     }
 
@@ -87,7 +87,7 @@ fn filter_files_by_formats(
             let (_, file_extension) =
                 extract_file_name_and_extension(&file::File::new(file.as_str()));
 
-            files_formats.contains(&file_extension) || *include_folders
+            files_extensions.contains(&file_extension) || *include_folders
         })
         .collect()
 }
@@ -107,13 +107,12 @@ fn recase_recursively(
 
         let (_, file_extension) = extract_file_name_and_extension(&file);
 
-        if formats_to_recase.len() > 0
+        // CHECK: Is it correct condition?
+        if !formats_to_recase.is_empty()
             && formats_to_recase.contains(&file_extension)
             && file.is_file()
         {
-            let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
-        } else if formats_to_recase.len() == 0 && file.is_file() {
-            let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
+            let _ = recase_file(Some(entry_path_string), into, is_sanitize);
         }
     }
     Ok(())

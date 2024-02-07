@@ -1,13 +1,10 @@
 /// Parse formats to recase from command line arguments. Now it removes spaces from formats.
-pub fn preprocess_formats(formats: &Vec<String>) -> Vec<String> {
-    formats
-        .into_iter()
-        .map(|format| remove_spaces(format))
-        .collect()
+pub fn preprocess_formats(formats: &[String]) -> Vec<String> {
+    formats.iter().map(|format| remove_spaces(format)).collect()
 }
 
 fn remove_spaces(string: &str) -> String {
-    string.replace(" ", "")
+    string.replace(' ', "")
 }
 
 #[cfg(test)]
