@@ -11,19 +11,15 @@ pub fn extract_file_name_and_extension(file: &File) -> (String, String) {
 }
 
 pub fn recase_file(file: Option<String>, into: &Into, is_sanitize: &bool) -> Result<(), FileErr> {
-    let binding = file.unwrap();
-    let file = File::new(binding.as_str());
+    let file_path = file.ok_or(FileErr::FileDoesNotExist)?;
+    let file = File::new(file_path.as_str());
 
     if !file.exist() {
-        let err = Err(FileErr::FileDoesNotExist);
-        println!("{:?}", err);
-        return err;
+        return Err(FileErr::FileDoesNotExist);
     }
 
     if !file.is_file() {
-        let err = Err(FileErr::NotAFile);
-        println!("{:?}", err);
-        return err;
+        return Err(FileErr::NotAFile);
     }
 
     let (file_name, file_extension) = extract_file_name_and_extension(&file);
@@ -32,7 +28,7 @@ pub fn recase_file(file: Option<String>, into: &Into, is_sanitize: &bool) -> Res
     let recased_file_name = recase(file_name_to_recase, map_case(into));
     let to_rename = format!("{}.{}", recased_file_name, file_extension);
 
-    let _ = file.rename(&to_rename);
+    file.rename(&to_rename)?;
 
     println!("Renamed to: {}", to_rename);
     Ok(())
@@ -43,13 +39,11 @@ pub fn recase_directory(
     into: &Into,
     is_sanitize: &bool,
 ) -> Result<(), FileErr> {
-    let binding = directory.unwrap();
-    let directory = File::new(binding.as_str());
+    let dir_path = directory.ok_or(FileErr::DirectoryDoesNotExist)?;
+    let directory = File::new(dir_path.as_str());
 
     if !directory.exist() {
-        let err = Err(FileErr::DirectoryDoesNotExist);
-        println!("{:?}", err);
-        return err;
+        return Err(FileErr::DirectoryDoesNotExist);
     }
 
     if !directory.is_dir() {
@@ -61,7 +55,7 @@ pub fn recase_directory(
 
     let recased_dir_name = recase(dir_name_to_recase, map_case(into));
 
-    let _ = directory.rename(&recased_dir_name);
+    directory.rename(&recased_dir_name)?;
 
     println!("Renamed to: {}", recased_dir_name);
     Ok(())

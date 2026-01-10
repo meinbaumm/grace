@@ -18,9 +18,9 @@ pub fn recase_files(
     let formats = preprocess_formats(formats_to_recase);
 
     if *is_recursive {
-        let _ = recase_recursively(directory.clone(), into, is_sanitize, &formats);
+        recase_recursively(directory.clone(), into, is_sanitize, &formats)?;
     } else {
-        let _ = recase(directory.clone(), into, is_sanitize, &formats, folders);
+        recase(directory.clone(), into, is_sanitize, &formats, folders)?;
     }
 
     Ok(())
@@ -36,13 +36,9 @@ fn recase(
     let provided_directory = directory.as_deref().unwrap();
     let file_path = File::new(provided_directory);
 
-    let files_to_recase = {
-        match file_path.read_dir() {
-            Ok(files) => filter_files_by_formats(files, formats_to_recase, folders),
-            Err(_err) => {
-                unimplemented!()
-            }
-        }
+    let files_to_recase = match file_path.read_dir() {
+        Ok(files) => filter_files_by_formats(files, formats_to_recase, folders),
+        Err(err) => return Err(err),
     };
 
     let directory_with_slash = maybe_add_slash_to_directory(provided_directory);
@@ -52,13 +48,13 @@ fn recase(
         let path = File::new(&full_path);
 
         if path.is_dir() && *folders {
-            let _ = recase_directory(Some(full_path), into, is_sanitize);
+            recase_directory(Some(full_path), into, is_sanitize)?;
         } else if path.is_file() {
-            let _ = recase_file(
+            recase_file(
                 Some(format!("{}{}", directory_with_slash, file)),
                 into,
                 is_sanitize,
-            );
+            )?;
         }
     }
 
@@ -111,7 +107,7 @@ fn recase_recursively(
             && formats_to_recase.contains(&file_extension)
             && file.is_file()
         {
-            let _ = recase_file(Some(entry_path_string), into, is_sanitize);
+            recase_file(Some(entry_path_string), into, is_sanitize)?;
         }
     }
     Ok(())

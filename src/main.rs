@@ -19,7 +19,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Recase string, file, or directory of files.
+    /// Recase string, file, or directory with files.
     Recase {
         #[command(subcommand)]
         what_to_recase: Recase,
@@ -111,20 +111,26 @@ fn main() {
                 string,
                 into: into_arg,
                 sanitize: is_sanitize,
-            } => recase_string(string.clone(), &into_arg, is_sanitize),
+            } => recase_string(string.clone(), into_arg, is_sanitize),
             Recase::File {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase_file(file.clone(), &into_arg, is_sanitize);
+                if let Err(e) = recase_file(file.clone(), into_arg, is_sanitize) {
+                    eprintln!("Error: {}", e);
+                    std::process::exit(1);
+                }
             }
             Recase::Dir {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase_directory(file.clone(), &into_arg, is_sanitize);
+                if let Err(e) = recase_directory(file.clone(), into_arg, is_sanitize) {
+                    eprintln!("Error: {}", e);
+                    std::process::exit(1);
+                }
             }
             Recase::Files {
                 directory,
@@ -134,14 +140,17 @@ fn main() {
                 recursive,
                 folders,
             } => {
-                let _ = recase_files(
+                if let Err(e) = recase_files(
                     directory.clone(),
-                    &into_arg,
+                    into_arg,
                     is_sanitize,
                     formats,
                     recursive,
                     folders,
-                );
+                ) {
+                    eprintln!("Error: {}", e);
+                    std::process::exit(1);
+                }
             }
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {

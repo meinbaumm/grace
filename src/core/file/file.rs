@@ -1,32 +1,29 @@
-use std::fmt;
 use std::fs;
 use std::path::Path;
 use std::vec::Vec;
+use thiserror::Error;
 
 /// Enum to represent the different errors that can occur when working with files.
-#[derive(Debug, PartialEq)]
+#[derive(Error, Debug, PartialEq)]
 pub enum FileErr {
+    #[error("Provided path is not a directory")]
     NotADirectory,
+    #[error("Provided path is not a file")]
     NotAFile,
-    UnhandledError,
+    #[error("File already exists")]
     FileAlreadyExist,
+    #[error("File does not exist")]
     FileDoesNotExist,
+    #[error("Directory does not exist")]
     DirectoryDoesNotExist,
-}
-
-impl std::error::Error for FileErr {}
-
-impl fmt::Display for FileErr {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            FileErr::NotADirectory => write!(f, "Provided path is not a directory"),
-            FileErr::NotAFile => write!(f, "Provided path is not a file"),
-            FileErr::UnhandledError => write!(f, "Unhandled error"),
-            FileErr::FileAlreadyExist => write!(f, "File already exist"),
-            FileErr::FileDoesNotExist => write!(f, "File does not exist"),
-            FileErr::DirectoryDoesNotExist => write!(f, "Directory does not exist"),
-        }
-    }
+    #[error("Failed to read directory: {0}")]
+    ReadDirError(String),
+    #[error("Failed to rename file: {0}")]
+    RenameError(String),
+    #[error("Failed to create file: {0}")]
+    CreateFileError(String),
+    #[error("I/O error: {0}")]
+    IoError(String),
 }
 
 /// Struct to represent a file or directory.
@@ -95,13 +92,22 @@ impl File<'_> {
             return Err(FileErr::NotADirectory);
         }
 
-        let paths = fs::read_dir(self.path).unwrap();
+        let paths = fs::read_dir(self.path)
+            .map_err(|e| FileErr::ReadDirError(e.to_string()))?;
 
-        let files_in_dir: Vec<String> = paths
-            .map(|path| path.unwrap().file_name().into_string().unwrap())
+        let files_in_dir: Result<Vec<String>, FileErr> = paths
+            .map(|entry| {
+                entry
+                    .map_err(|e| FileErr::ReadDirError(e.to_string()))
+                    .and_then(|e| {
+                        e.file_name()
+                            .into_string()
+                            .map_err(|_| FileErr::IoError("Invalid UTF-8 in filename".to_string()))
+                    })
+            })
             .collect();
 
-        Ok(files_in_dir)
+        files_in_dir
     }
 
     /// Create a file. If the file already exist, an error `FileErr::FileAlreadyExist` will be returned.
@@ -110,19 +116,16 @@ impl File<'_> {
             return Err(FileErr::FileAlreadyExist);
         }
 
-        match fs::File::create(self.path) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(FileErr::UnhandledError),
-        }
+        fs::File::create(self.path)
+            .map(|_| ())
+            .map_err(|e| FileErr::CreateFileError(e.to_string()))
     }
 
     /// Rename file or directory.
     pub fn rename(&self, new_name: &str) -> Result<(), FileErr> {
         let new_path = self.path.with_file_name(new_name);
-        match fs::rename(self.path, new_path) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(FileErr::UnhandledError),
-        }
+        fs::rename(self.path, new_path)
+            .map_err(|e| FileErr::RenameError(e.to_string()))
     }
 
     pub fn path(&self) -> String {
