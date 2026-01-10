@@ -1,4 +1,4 @@
-use grace_cli::core::file::{File, FileErr};
+use grace_cli::core::file::file::{File, FileErr};
 use serial_test::{parallel, serial};
 
 #[test]
