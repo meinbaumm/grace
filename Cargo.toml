@@ -2,7 +2,7 @@
 name = "grace-cli"
 version = "0.1.1"
 authors = ["Maxim Petrenko <meinbaumm@gmail.com>"]
-edition = "2021"
+edition = "2024"
 description = "CLI tool for processing files and strings."
 readme = "README.md"
 repository = "https://github.com/meinbaumm/grace.git"
@@ -11,8 +11,8 @@ keywords = ["cli", "files-manipulation", "strings-processing", "files"]
 categories = ["command-line-utilities", "text-processing", "files"]
 
 [dependencies]
-clap = { version = "4.3.21", features = ["derive"] }
-recase = "0.3.0"
-regex = "1.9"
-serial_test = "3.0"
-walkdir = "2.3.3"
+clap = { version = "4.5.54", features = ["derive"] }
+recase = "0.4.0"
+regex = "1.12.2"
+serial_test = "3.3.1"
+walkdir = "2.5.0"
