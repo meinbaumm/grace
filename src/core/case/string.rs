@@ -54,9 +54,9 @@ where
 
 /// Sanitize a string by removing all characters that are not alphanumeric.
 /// The only characters that are allowed are: `a-z`, `A-Z`, `0-9`, `_`, and `-`.
-/// Used regex is `r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;·']"`
+/// Used regex is `r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;`·']"`
 pub fn sanitize(str_to_sanitize: &str) -> String {
-    let pattern = r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;·']";
+    let pattern = r"[\(\)’@#<>+«»~&%^—,!\.\[\]{}\?:;`·']";
     let regex = Regex::new(pattern).unwrap();
     let replaced_text = regex.replace_all(str_to_sanitize, "");
 

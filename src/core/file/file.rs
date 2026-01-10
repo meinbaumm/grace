@@ -92,8 +92,7 @@ impl File<'_> {
             return Err(FileErr::NotADirectory);
         }
 
-        let paths = fs::read_dir(self.path)
-            .map_err(|e| FileErr::ReadDirError(e.to_string()))?;
+        let paths = fs::read_dir(self.path).map_err(|e| FileErr::ReadDirError(e.to_string()))?;
 
         let files_in_dir: Result<Vec<String>, FileErr> = paths
             .map(|entry| {
@@ -124,8 +123,7 @@ impl File<'_> {
     /// Rename file or directory.
     pub fn rename(&self, new_name: &str) -> Result<(), FileErr> {
         let new_path = self.path.with_file_name(new_name);
-        fs::rename(self.path, new_path)
-            .map_err(|e| FileErr::RenameError(e.to_string()))
+        fs::rename(self.path, new_path).map_err(|e| FileErr::RenameError(e.to_string()))
     }
 
     pub fn path(&self) -> String {

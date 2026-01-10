@@ -39,7 +39,7 @@ fn test_recase_file_success() {
     assert!(!std::path::Path::new(test_file).exists());
     let new_file = "tests/commands/recase/test_file_hello_world.txt";
     assert!(std::path::Path::new(new_file).exists());
-    
+
     // Clean up - remove the renamed file
     let _ = fs::remove_file(new_file);
 }
@@ -92,7 +92,10 @@ fn test_recase_file_with_sanitize() {
             let path = entry.path();
             if let Some(name) = path.file_name() {
                 let name_str = name.to_string_lossy();
-                if name_str.contains("test") && name_str.contains("file") && name_str.contains("special") {
+                if name_str.contains("test")
+                    && name_str.contains("file")
+                    && name_str.contains("special")
+                {
                     let _ = fs::remove_file(path);
                 }
             }

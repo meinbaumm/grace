@@ -171,10 +171,10 @@ fn test_read_dir_error() {
     // Test that read_dir properly returns ReadDirError for invalid paths
     let invalid_path = "/nonexistent/directory/that/does/not/exist";
     let file = File::new(invalid_path);
-    
+
     let result = file.read_dir();
     assert!(result.is_err());
-    
+
     if let Err(e) = result {
         match e {
             FileErr::NotADirectory | FileErr::ReadDirError(_) => {
@@ -191,10 +191,10 @@ fn test_rename_error() {
     // Test rename error when trying to rename non-existent file
     let non_existent = "tests/core/file/does_not_exist_for_rename.txt";
     let file = File::new(non_existent);
-    
+
     let result = file.rename("new_name.txt");
     assert!(result.is_err());
-    
+
     if let Err(e) = result {
         match e {
             FileErr::RenameError(_) => {} // Expected
@@ -209,10 +209,10 @@ fn test_create_file_error() {
     // Test create_file error for invalid paths
     let invalid_path = "/root/cannot_create_here.txt";
     let file = File::new(invalid_path);
-    
+
     let result = file.create_file();
     assert!(result.is_err());
-    
+
     if let Err(e) = result {
         match e {
             FileErr::CreateFileError(_) => {} // Expected
