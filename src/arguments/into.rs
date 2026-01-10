@@ -1,4 +1,4 @@
-use crate::core::case::Case;
+use crate::core::case::string::Case;
 use clap::ValueEnum;
 
 /// Enum to represent the different cases that can be converted to.

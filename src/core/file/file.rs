@@ -37,7 +37,7 @@ pub struct File<'a> {
 
 impl File<'_> {
     /// Create a new file.
-    pub fn new(path_str: &str) -> File {
+    pub fn new(path_str: &str) -> File<'_> {
         File {
             path: Path::new(path_str),
         }

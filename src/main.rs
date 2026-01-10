@@ -2,8 +2,11 @@ use std::vec::Vec;
 
 use clap::{Parser, Subcommand};
 
-use grace_cli::arguments;
-use grace_cli::commands::{recase, sanitize};
+use grace_cli::arguments::into::Into;
+use grace_cli::commands::recase::file::{recase_directory, recase_file};
+use grace_cli::commands::recase::files::recase_files;
+use grace_cli::commands::recase::string::recase_string;
+use grace_cli::commands::sanitize::string::sanitize_string;
 
 #[derive(Parser)]
 #[command(name = "grace")]
@@ -37,7 +40,7 @@ enum Recase {
         string: Option<String>,
         /// Case to recase string into.
         #[arg(short, long, value_enum)]
-        into: arguments::Into,
+        into: Into,
         /// Sanitize string before recasing.
         #[arg(short, long)]
         sanitize: bool,
@@ -49,7 +52,7 @@ enum Recase {
         file: Option<String>,
         /// Case to recase file into.
         #[arg(short, long)]
-        into: arguments::Into,
+        into: Into,
         /// Sanitize file name before recasing.
         #[arg(short, long)]
         sanitize: bool,
@@ -61,7 +64,7 @@ enum Recase {
         file: Option<String>,
         /// Case to recase file into.
         #[arg(short, long)]
-        into: arguments::Into,
+        into: Into,
         /// Sanitize file name before recasing.
         #[arg(short, long)]
         sanitize: bool,
@@ -73,7 +76,7 @@ enum Recase {
         directory: Option<String>,
         /// Case to recase files into.
         #[arg(short, long)]
-        into: arguments::Into,
+        into: Into,
         /// File extensions to recase. If multiple extensions, provide it like so: --formats="pdf, epub".
         #[arg(short, long, value_delimiter = ',')]
         formats: Vec<String>,
@@ -108,20 +111,20 @@ fn main() {
                 string,
                 into: into_arg,
                 sanitize: is_sanitize,
-            } => recase::recase_string(string.clone(), &into_arg, is_sanitize),
+            } => recase_string(string.clone(), &into_arg, is_sanitize),
             Recase::File {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase::recase_file(file.clone(), &into_arg, is_sanitize);
+                let _ = recase_file(file.clone(), &into_arg, is_sanitize);
             }
             Recase::Dir {
                 file,
                 into: into_arg,
                 sanitize: is_sanitize,
             } => {
-                let _ = recase::recase_directory(file.clone(), &into_arg, is_sanitize);
+                let _ = recase_directory(file.clone(), &into_arg, is_sanitize);
             }
             Recase::Files {
                 directory,
@@ -131,7 +134,7 @@ fn main() {
                 recursive,
                 folders,
             } => {
-                let _ = recase::recase_files(
+                let _ = recase_files(
                     directory.clone(),
                     &into_arg,
                     is_sanitize,
@@ -142,7 +145,7 @@ fn main() {
             }
         },
         Commands::Sanitize { what_to_sanitize } => match what_to_sanitize {
-            Sanitize::String { string } => sanitize::sanitize_string(string),
+            Sanitize::String { string } => sanitize_string(string),
         },
     }
 }
