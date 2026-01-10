@@ -1,25 +1,26 @@
 use walkdir::WalkDir;
 
-use crate::arguments;
-use crate::commands::recase::file::{extract_file_name_and_extension, recase_file};
-use crate::core::file::{self, FileErr};
-
-use super::recase_directory;
+use crate::arguments::formats_to_recase::preprocess_formats;
+use crate::arguments::into::Into;
+use crate::commands::recase::file::{
+    extract_file_name_and_extension, recase_directory, recase_file,
+};
+use crate::core::file::file::{File, FileErr};
 
 pub fn recase_files(
     directory: Option<String>,
-    into: &arguments::Into,
+    into: &Into,
     is_sanitize: &bool,
-    formats_to_recase: &Vec<String>,
+    formats_to_recase: &[String],
     is_recursive: &bool,
     folders: &bool,
 ) -> Result<(), FileErr> {
-    let formats = arguments::preprocess_formats(formats_to_recase);
+    let formats = preprocess_formats(formats_to_recase);
 
     if *is_recursive {
-        let _ = recase_recursively(directory.clone(), &into, is_sanitize, &formats);
+        recase_recursively(directory.clone(), into, is_sanitize, &formats)?;
     } else {
-        let _ = recase(directory.clone(), &into, is_sanitize, &formats, folders);
+        recase(directory.clone(), into, is_sanitize, &formats, folders)?;
     }
 
     Ok(())
@@ -27,37 +28,33 @@ pub fn recase_files(
 
 fn recase(
     directory: Option<String>,
-    into: &arguments::Into,
+    into: &Into,
     is_sanitize: &bool,
-    formats_to_recase: &Vec<String>,
+    formats_to_recase: &[String],
     folders: &bool,
 ) -> Result<(), FileErr> {
     let provided_directory = directory.as_deref().unwrap();
-    let file_path = file::File::new(provided_directory);
+    let file_path = File::new(provided_directory);
 
-    let files_to_recase = {
-        match file_path.read_dir() {
-            Ok(files) => filter_files_by_formats(files, &formats_to_recase, folders),
-            Err(_err) => {
-                unimplemented!()
-            }
-        }
+    let files_to_recase = match file_path.read_dir() {
+        Ok(files) => filter_files_by_formats(files, formats_to_recase, folders),
+        Err(err) => return Err(err),
     };
 
-    let directory_with_slash = maybe_add_slash_to_directory(&provided_directory);
+    let directory_with_slash = maybe_add_slash_to_directory(provided_directory);
 
     for file in files_to_recase {
         let full_path = format!("{}{}", directory_with_slash, file);
-        let path = file::File::new(&full_path);
+        let path = File::new(&full_path);
 
         if path.is_dir() && *folders {
-            let _ = recase_directory(Some(full_path), &into, is_sanitize);
+            recase_directory(Some(full_path), into, is_sanitize)?;
         } else if path.is_file() {
-            let _ = recase_file(
+            recase_file(
                 Some(format!("{}{}", directory_with_slash, file)),
-                &into,
+                into,
                 is_sanitize,
-            );
+            )?;
         }
     }
 
@@ -74,7 +71,7 @@ fn maybe_add_slash_to_directory(directory: &str) -> String {
 
 fn filter_files_by_formats(
     files: Vec<String>,
-    files_formats: &Vec<String>,
+    files_formats: &[String],
     include_folders: &bool,
 ) -> Vec<String> {
     if files_formats.is_empty() {
@@ -84,8 +81,7 @@ fn filter_files_by_formats(
     files
         .into_iter()
         .filter(|file| {
-            let (_, file_extension) =
-                extract_file_name_and_extension(&file::File::new(file.as_str()));
+            let (_, file_extension) = extract_file_name_and_extension(&File::new(file.as_str()));
 
             files_formats.contains(&file_extension) || *include_folders
         })
@@ -94,26 +90,24 @@ fn filter_files_by_formats(
 
 fn recase_recursively(
     directory: Option<String>,
-    into: &arguments::Into,
+    into: &Into,
     is_sanitize: &bool,
-    formats_to_recase: &Vec<String>,
+    formats_to_recase: &[String],
 ) -> Result<(), FileErr> {
     for entry in WalkDir::new(directory.unwrap())
         .into_iter()
         .filter_map(|e| e.ok())
     {
-        let file = file::File::new(entry.path().to_str().unwrap());
+        let file = File::new(entry.path().to_str().unwrap());
         let entry_path_string = entry.path().to_str().unwrap().to_string();
 
         let (_, file_extension) = extract_file_name_and_extension(&file);
 
-        if formats_to_recase.len() > 0
+        if !formats_to_recase.is_empty()
             && formats_to_recase.contains(&file_extension)
             && file.is_file()
         {
-            let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
-        } else if formats_to_recase.len() == 0 && file.is_file() {
-            let _ = recase_file(Some(entry_path_string), &into, is_sanitize);
+            recase_file(Some(entry_path_string), into, is_sanitize)?;
         }
     }
     Ok(())

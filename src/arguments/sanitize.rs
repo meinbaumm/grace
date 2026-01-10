@@ -1,4 +1,4 @@
-use crate::core::case::sanitize;
+use crate::core::case::string::sanitize;
 
 /// Sanitize a string if `is_sanitize` true.
 pub fn maybe_sanitize(string: String, is_sanitize: &bool) -> String {
