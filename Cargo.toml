@@ -12,7 +12,7 @@ categories = ["command-line-utilities", "text-processing", "files"]
 
 [dependencies]
 clap = { version = "4.5.54", features = ["derive"] }
-recase = "0.4.0"
+recase = "0.5.1"
 regex = "1.12.2"
 serial_test = "3.3.1"
 thiserror = "2.0.17"
